@@ -12,6 +12,10 @@ class PostController extends Controller
     public function getAll(){
 
         $posts = Post::all();
+        foreach ($posts as $post) {
+            
+            $post['tags'] = $post->tags;
+        }
 
         return response()->json($posts);
     }

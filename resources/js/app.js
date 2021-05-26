@@ -9,6 +9,13 @@ require('./bootstrap');
 var app = new Vue({
     el: '#app',
     data: {
-        
+        posts: [],
+    },
+    mounted: function(){
+        var self = this;
+        axios.get('/api/posts')
+        .then(function (response) {
+            self.posts = response.data;
+        });
     }
 });

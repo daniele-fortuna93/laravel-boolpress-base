@@ -1849,7 +1849,15 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 var app = new Vue({
   el: '#app',
-  data: {}
+  data: {
+    posts: []
+  },
+  mounted: function mounted() {
+    var self = this;
+    axios.get('/api/posts').then(function (response) {
+      self.posts = response.data;
+    });
+  }
 });
 
 /***/ }),
