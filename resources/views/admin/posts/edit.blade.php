@@ -1,7 +1,7 @@
 @extends('layouts.base')
 
 @section('pageTitle')
-    Crea un nuovo post
+    Modifica post
 @endsection
 
 @section('content')
@@ -14,38 +14,39 @@
             </ul> 
         </div>
     @endif
-    <form action="{{ route('admin.posts.store') }}" method="POST">
+    
+    <form action="{{ route('admin.posts.update',$post->id) }}" method="POST">
         @csrf
-        @method('POST')
+        @method('PUT')
         <div class="form-group" >
             <label for="title">Titolo</label>
-            <input type="text" class="form-control" id="title" name="title" placeholder="Title" >
+            <input type="text" class="form-control" id="title" name="title" placeholder="Title" value="{{ $post->title }}">
         </div>
 
         <div class="form-group" >
             <label for="date">Data</label>
-            <input type="date" class="form-control" id="date" name="date" placeholder="Date" >
+            <input type="date" class="form-control" id="date" name="date" placeholder="Date" value="{{ $post->date }}">
         </div>
 
         <div class="form-group" >
             <label for="content">Contenuto</label>
-            <textarea class="form-control" name="content" id="content" cols="30" rows="10" placeholder="content"></textarea>
+            <textarea class="form-control" name="content" id="content" cols="30" rows="10" placeholder="content">{{ $post->content }}</textarea>
         </div>
 
         <div class="form-group" >
             <label for="image">Image</label>
-            <input type="text" class="form-control" id="image" name="image" placeholder="Image">
+            <input type="text" class="form-control" id="image" name="image" placeholder="Image" value="{{ $post->image }}">
         </div>
 
 
         <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="published" name="published">
+            <input type="checkbox" class="form-check-input" id="published" name="published" {{$post->published ? 'checked' : ''}}>
             <label class="form-check-label" for="published">Published</label>
         </div>
-
         @foreach ($tags as $tag)
+        
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="tags[]" value="{{ $tag->id }}" id="{{ $tag->name }}">
+            <input class="form-check-input" type="checkbox" name="tags[]" value="{{ $tag->id }}" id="{{ $tag->name }}" {{ $post->tags->contains($tag) ? 'checked' : '' }}>
             <label class="form-check-label" for="{{ $tag->name }}">
               {{ $tag->name }}
             </label>
@@ -53,7 +54,7 @@
         @endforeach
 
         <div>
-            <button type="submit" class="btn btn-primary">Crea</button>
+            <button type="submit" class="btn btn-primary">Modifica</button>
         </div>
         
     </form>

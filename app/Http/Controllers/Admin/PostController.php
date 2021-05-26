@@ -5,11 +5,18 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 
 use App\Post;
+use App\Tag;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+
+    protected $validation = [
+        'date' => 'required|date|',
+        'content' => 'required|string',
+        'image' => 'nullable|url',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +26,7 @@ class PostController extends Controller
     {
         $posts = Post::all();
 
-        dd($posts);
+        return view('admin.posts.index', compact('posts'));
     }
 
     /**
@@ -29,7 +36,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $tags = Tag::all();
+        return view('admin.posts.create', compact('tags'));
     }
 
     /**
@@ -40,37 +48,26 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->all();
-
-        // controllo checkbox
-        if ( !isset($data['published']) ) {
-            $data['published'] = false;
-        } else {
-            $data['published'] = true;
-        }
-
-        // impostazione slug
-        // $data['slug'] = Str::slug($data['title'], '-');
-
-
+        // aggiungo all'array comune di validazione la validazione per il titolo unique
+        $validation = $this->validation;
+        $validation['title'] = 'required|string|max:255|unique:posts';
+        
         // validazione
-        $request->validate([
-            'title' => 'required|string|max:255|',
-            'date' => 'required|date|',
-            'content' => 'required|string',
-            'image' => 'nullable|url',
-        ]);
+        $request->validate($validation);
 
-        // insert
+        // inserisco i dati dentro la variabile $data
+        $data = $request->all();
+        
+        // assegno alla checkbox il valore 0 o 1 a seconda se è flaggata o no
+        $data['published'] = !isset($data['published']) ? 0 : 1;
+        // imposto lo slug
+        $data['slug'] = Str::slug($data['title'], '-');
 
-        $newPost = new Post();
-            $newPost->title = $data['title'];
-            $newPost->date = $data['date'];
-            $newPost->content = $data['date'];
-            $newPost->image = $data['date'];
-            $newPost->slug = Str::slug($data['title'], '-');
-            $newPost->published = $data['published'];
-            $newPost->save();
+        // assegno i dati creati ad una variabile $newPost
+        $newPost = Post::create($data);    
+        
+        // aggiungo i tags al post
+        $newPost->tags()->attach($data['tags']);
 
         return redirect()->route('admin.posts.index');
     }
@@ -83,7 +80,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        dd($post->comments->last()->content);
+        return view('admin.posts.show', compact('post'));
     }
 
     /**
@@ -92,9 +89,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        $tags = Tag::all();
+        return view('admin.posts.edit', compact('post', 'tags'));
     }
 
     /**
@@ -104,9 +102,29 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        // aggiungo all'array comune di validazione la validazione per il titolo unique da non considerare quando vado a modificare il post 
+        $validation = $this->validation;
+        $validation['title'] = 'required|string|max:255|unique:posts,title,'. $post->id;
+
+        $request->validate($validation);
+
+        $data = $request->all();  
+        
+        // assegno alla checkbox il valore 0 o 1 a seconda se è flaggata o no
+        $data['published'] = !isset($data['published']) ? 0 : 1;
+        // imposto lo slug partendo dal title
+        $data['slug'] = Str::slug($data['title'], '-');
+
+        // Aggiorno tutti i dati passati
+        $post->update($data);
+
+        // aggiorno i tags con la funzione proprietà sync()
+        $post->tags()->sync($data['tags']);
+
+        // return
+        return redirect()->route('admin.posts.show', $post);
     }
 
     /**
@@ -115,8 +133,13 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->tags()->detach();
+
+        $post->delete();
+
+        return redirect()->route('admin.posts.index')->with('message', 'Il post è stato eliminato!');
+
     }
 }
