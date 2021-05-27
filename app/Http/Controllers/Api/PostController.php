@@ -13,7 +13,7 @@ class PostController extends Controller
 
         $posts = Post::all();
         foreach ($posts as $post) {
-            
+            $post['comments'] = $post->comments;
             $post['tags'] = $post->tags;
         }
 

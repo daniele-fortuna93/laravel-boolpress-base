@@ -67,7 +67,11 @@ class PostController extends Controller
         $newPost = Post::create($data);    
         
         // aggiungo i tags al post
-        $newPost->tags()->attach($data['tags']);
+
+        if ( isset($data['tags'])) {
+            $newPost->tags()->attach($data['tags']);
+        }
+        
 
         return redirect()->route('admin.posts.index');
     }
@@ -121,6 +125,9 @@ class PostController extends Controller
         $post->update($data);
 
         // aggiorno i tags con la funzione proprietà sync()
+        if ( !isset($data['tags'])) {
+            $data['tags'] = [];
+        }
         $post->tags()->sync($data['tags']);
 
         // return
@@ -135,7 +142,6 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $post->tags()->detach();
 
         $post->delete();
 

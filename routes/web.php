@@ -17,8 +17,13 @@ Route::get('/','BlogController@index')->name('guest.posts.index');
 
 Route::get('posts/{slug}','BlogController@show')->name('guest.posts.show');
 
+Route::get('tags/{slug}','BlogController@filterTag')->name('guest.posts.filter-tag');
+
+Route::post('posts/{post}/add-comment','BlogController@addComment')->name('guest.posts.add-comment');
+
 
 
 Route::prefix('admin')->name('admin.')->namespace('Admin')->group(function(){
+    Route::delete('comments/{comment}', 'CommentController@destroy')->name('posts.comment-delete');
     Route::resource('posts','PostController');
 });
