@@ -8,6 +8,7 @@ use App\Post;
 use App\Tag;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -15,7 +16,7 @@ class PostController extends Controller
     protected $validation = [
         'date' => 'required|date|',
         'content' => 'required|string',
-        'image' => 'nullable|url',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ];
     /**
      * Display a listing of the resource.
@@ -52,6 +53,7 @@ class PostController extends Controller
         $validation = $this->validation;
         $validation['title'] = 'required|string|max:255|unique:posts';
         
+
         // validazione
         $request->validate($validation);
 
@@ -62,6 +64,11 @@ class PostController extends Controller
         $data['published'] = !isset($data['published']) ? 0 : 1;
         // imposto lo slug
         $data['slug'] = Str::slug($data['title'], '-');
+        // upload image
+        if ( isset($data['image'])) {
+            $data['image'] = Storage::disk()->put('images', $data['image']);
+        }
+        
 
         // assegno i dati creati ad una variabile $newPost
         $newPost = Post::create($data);    
