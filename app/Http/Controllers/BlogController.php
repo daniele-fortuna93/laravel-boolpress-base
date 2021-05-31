@@ -39,7 +39,7 @@ class BlogController extends Controller
         $newComment->post_id = $post->id;
         $newComment->save();
         
-        Mail::to('mail@mail.it')->send(new CommentMail($post));
+        Mail::to('mail@mail.it')->send(new CommentMail($post, $newComment));
         return back();
 
     }

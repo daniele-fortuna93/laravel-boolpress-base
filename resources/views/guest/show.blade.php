@@ -28,7 +28,10 @@
 				</li>
 			@endforeach
 		</ul>
-		<h3>Aggiungi Commento</h3>
+		
+	</div>
+	@endif
+	<h3>Aggiungi Commento</h3>
 		<form action="{{route('guest.posts.add-comment', ['post' => $post->id])}}" method="post">
 			@csrf
 			@method('POST')
@@ -44,7 +47,5 @@
 				<button type="submit" class="btn btn-primary">Inserisci</button>
 			</div>
 		</form>
-	</div>
-	@endif
 </div>
 @endsection
