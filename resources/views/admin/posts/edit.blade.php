@@ -14,6 +14,7 @@
             </ul> 
         </div>
     @endif
+    <a href="{{ route('admin.posts.index')}}">Home Page</a>
     
     <form action="{{ route('admin.posts.update',$post->id) }}" method="POST" enctype="multipart/form-data">
         @csrf

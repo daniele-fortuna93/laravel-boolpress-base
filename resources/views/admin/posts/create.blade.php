@@ -14,6 +14,7 @@
             </ul> 
         </div>
     @endif
+    <a href="{{ route('admin.posts.index')}}">Home Page</a>
     <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('POST')
@@ -57,4 +58,5 @@
         </div>
         
     </form>
+
 @endsection
