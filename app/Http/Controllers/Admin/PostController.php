@@ -128,7 +128,9 @@ class PostController extends Controller
         // imposto lo slug partendo dal title
         $data['slug'] = Str::slug($data['title'], '-');
 
-        $data['image'] = Storage::disk()->put('images', $data['image']);
+        if ( isset($data['image'])) {
+            $data['image'] = Storage::disk()->put('images', $data['image']);
+        }
 
         // Aggiorno tutti i dati passati
         $post->update($data);
