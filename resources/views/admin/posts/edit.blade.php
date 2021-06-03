@@ -34,9 +34,9 @@
         </div>
 
         <div class="form-group" >
-            <label for="image">Image</label>
-            <img src="{{$post->image ? asset('storage/' . $post->image)  : asset('storage/images/150.png') }}" alt="{{$post->title}}" style="width: 100px">
-            <input type="file" class="form-control" id="image" name="image">
+            <label for="image">Immagine</label>
+            <img src="{{$post->image ? asset('storage/' . $post->image)  : asset('storage/images/150.png') }}" alt="{{$post->title}}" style="width: 100px; margin-bottom: 5px">
+            <input type="file" class="d-block" id="image" name="image">
         </div>
 
 
